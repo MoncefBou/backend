@@ -6,11 +6,11 @@ var app = express();
 // EX 2
 var arrayOfAuthors = ['Larwrence Nowell, UK', 'William Shakespeare, UK', 'Charles Dickens, US', 'Oscar Wilde, UK'];
 
-app.get('/authors/:number', function (req, res) {
-    var number = req.params.number - 1
+app.get('/authors/:id', function (req, res) {
+    var number = req.params.id - 1
     
     if (arrayOfAuthors[number] === undefined) {
-        res.send('No authors here sorry');
+        res.send('No authors here, sorry...');
     } else {
         res.send(arrayOfAuthors[number]);
     }
@@ -19,8 +19,8 @@ app.get('/authors/:number', function (req, res) {
 // EX 3
 var arrayBooks = ['Beowulf', 'Hamlet, Othello, Romeo and Juliet, MacBeth', 'Oliver Twist, A Christmas Carol', 'The Picture of Dorian Gray, The Importance of Being Earnest'];
 
-app.get('/authors/:number/books', function (req, res) {
-    var number = req.params.number - 1
+app.get('/authors/:id/books', function (req, res) {
+    var number = req.params.id - 1
 
     if (arrayOfAuthors[number] === undefined) {
         res.send('No authors here, sorry...');
