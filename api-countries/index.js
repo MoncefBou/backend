@@ -3,7 +3,7 @@ const app = express();
 const cors = require('cors')
 app.use(cors())
 
-const arrayOfCountries = ['France', 'Spain', 'Argentina', 'Senegal', 'Tunisia'];
+const arrayOfCountries = ['USA', 'Morocco', 'Argentina', 'Mali', 'Ukraine'];
 
 app.get('/countries', (req, res) => res.send(arrayOfCountries))
 
