@@ -1,16 +1,12 @@
-var express = require('express');
-var app = express();
-var cors = require('cors')
+const express = require('express');
+const app = express();
+const cors = require('cors')
 app.use(cors())
 
-var arrayOfCountries = ['France', 'Spain', 'Argentina', 'Senegal', 'Tunisia'];
+const arrayOfCountries = ['France', 'Spain', 'Argentina', 'Senegal', 'Tunisia'];
 
-app.get('/countries', function (req, res) {
-    res.send(arrayOfCountries);
-})
+app.get('/countries', (req, res) => res.send(arrayOfCountries))
 
 // SERVER
-var port = 8000;
-app.listen(port, function () {
-    console.log('Server', port);
-})
+const port = 8000;
+app.listen(port, () => console.log('Server', port))
