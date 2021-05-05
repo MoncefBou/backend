@@ -3,7 +3,7 @@ const app = express();
 import cors from 'cors';
 app.use(cors())
 
-import movies from './dataCatalog.mjs';
+import movies from './dataCatalog.json';
 
 
 app.get("/movies", (req, res) => {
