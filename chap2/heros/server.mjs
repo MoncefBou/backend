@@ -34,6 +34,11 @@ const debug = (req, res, next) => {
     next()
 }
 
+const transformName = (req, res, next) => {
+    req.body.name = req.body.name.toLowerCase()
+    next()
+}
+
 
 app.use(express.json())
 app.use(cors())
@@ -44,12 +49,27 @@ app.get("/heroes", (req, res) => {
     res.json(superHeros)
 })
 
+app.post("/heroes", transformName, (req, res) => {
+    let newHeroes = req.body
+
+    const arrayToVerify = superHeros.filter(hero => hero.name.toLowerCase() === newHeroes.name)
+
+    if (arrayToVerify.length) {
+        res.json({ message: "Cet héros existe déja !" })
+    } else {
+        superHeros.push(newHeroes)
+        res.json({ message: "Ok, héros ajouté" })
+    }
+})
+
 app.get("/heroes/:name", (req, res) => {
+    console.log(req.params.name);
+
     let name = req.params.name.toLowerCase()
 
 
     const nameFound = superHeros.filter(hero => {
-      return  hero.name.split(" ").join("").toLowerCase() === name
+        return hero.name.split(" ").join("").toLowerCase() === name
     })
 
     if (nameFound.length) {
@@ -64,7 +84,7 @@ app.get("/heroes/:name/powers", (req, res) => {
 
 
     const nameFound = superHeros.filter(hero => {
-      return  hero.name.split(" ").join("").toLowerCase() === name
+        return hero.name.split(" ").join("").toLowerCase() === name
     })
 
     if (nameFound.length) {
@@ -72,7 +92,31 @@ app.get("/heroes/:name/powers", (req, res) => {
     } else {
         res.json({ message: "Wrong name of heroes man !" })
     }
-   
+
+})
+
+app.post("/heroes/:name/powers", (req, res) => {
+    let name = req.params.name.toLowerCase()
+    let newPower = req.body.newPower
+
+    const nameFound = superHeros.filter(hero => {
+        return hero.name.split(" ").join("").toLowerCase() === name
+    })
+
+    if (nameFound.length) {
+
+        superHeros.forEach((hero, index) => {
+
+            if (hero.name === nameFound[0].name) {
+                superHeros[index].power.push(newPower)
+            }
+        });
+
+        res.json({ message: "Pouvoir ajouté !" })
+
+    } else {
+        res.json({ message: "Wrong name of heroes man !" })
+    }
 })
 
 
