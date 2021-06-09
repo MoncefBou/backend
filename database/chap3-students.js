@@ -1,7 +1,7 @@
 // Créer la BDD
 
-show dbs
-use school
+"show dbs"
+"use school"
 
 // Créer les collections
 

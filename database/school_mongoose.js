@@ -20,7 +20,7 @@ const studentsSchema = mongoose.Schema({
     name: String,
     city: String,
     favorites: Object,
-    languages: Array,
+    languages: [{type: mongoose.Schema.Types.ObjectId, ref: 'Languages'}],
     created: { type: Date, default: Date.now }
 })
 
@@ -53,8 +53,8 @@ async function addAllStudents() {
                     sport: "Boxing"
                 },
                 languages: [
-                    "60ba207deddc658f45af3d74",
-                    "60ba2088eddc658f45af3d75"
+                    {langue: "60ba207deddc658f45af3d74"},
+                    {langue: "60ba2088eddc658f45af3d75"}
                 ]
             },
             {
@@ -65,8 +65,8 @@ async function addAllStudents() {
                     sport: "Cricket"
                 },
                 languages: [
-                    "60ba207deddc658f45af3d74",
-                    "60ba208eeddc658f45af3d76"
+                    {langue: "60ba207deddc658f45af3d74"},
+                    {langue: "60ba208eeddc658f45af3d76"}
                 ]
             },
             {
@@ -77,7 +77,7 @@ async function addAllStudents() {
                     sport: "Tennis"
                 },
                 languages: [
-                    "60ba207deddc658f45af3d74"
+                    {langue: "60ba207deddc658f45af3d74"}
                 ]
             },
             {
@@ -88,10 +88,10 @@ async function addAllStudents() {
                     sport: "Baseball"
                 },
                 languages: [
-                    "60ba207deddc658f45af3d74",
-                    "60ba2088eddc658f45af3d75",
-                    "60ba2096eddc658f45af3d77",
-                    "60ba209ceddc658f45af3d78"
+                    {langue: "60ba207deddc658f45af3d74"},
+                    {langue: "60ba2088eddc658f45af3d75"},
+                    {langue: "60ba2096eddc658f45af3d77"},
+                    {langue: "60ba209ceddc658f45af3d78"}
                 ]
             },
             {
@@ -102,8 +102,8 @@ async function addAllStudents() {
                     sport: "Tennis"
                 },
                 languages: [
-                    "60ba207deddc658f45af3d74",
-                    "60ba209ceddc658f45af3d78"
+                    {langue: "60ba207deddc658f45af3d74"},
+                    {langue: "60ba209ceddc658f45af3d78"}
                 ]
             },
             {
@@ -114,9 +114,9 @@ async function addAllStudents() {
                     sport: "Hip-hop"
                 },
                 languages: [
-                    "60ba207deddc658f45af3d74",
-                    "60ba2088eddc658f45af3d75",
-                    "60ba208eeddc658f45af3d76"
+                    {langue: "60ba207deddc658f45af3d74"},
+                    {langue: "60ba2088eddc658f45af3d75"},
+                    {langue: "60ba208eeddc658f45af3d76"}
                 ]
             }
         ])
@@ -125,6 +125,8 @@ async function addAllStudents() {
         console.error("Error !!!", error);
     }
 }
+
+addAllStudents()
 
 // ******************************************** RAPPORT LVL 1 **************************************************
 
@@ -282,14 +284,23 @@ async function countStudentsFromParis () {
 
 async function searchLanguagesId1 () {
     try { 
-        const languagesAndOtherId1 = await Students.findById("60bf7f88c89c6578bc4f3647").populate("languages", "name -_id")
-        console.log(languagesAndOtherId1);
+        const languagesAndOtherId1 = await Students.findOne({_id: "60c092093fc4367f04f1556c"}).populate('languages.langue').exec(
+            function (err, students) {
+                if(err) {
+                    console.error('ERROR !!!', err);
+                } else {
+                    console.log(students);
+                }
+            }
+        )
+        // console.log(languagesAndOtherId1);
     } catch (error) {
         console.error("Error !!!", error);
     }
 }
 
-searchLanguagesId1()
+
+// searchLanguagesId1();
 
 // 2. Récupérer les langues et toutes les colonnes de l’étudiant.e d’ID 4
 // 3. Récupérer la colonne langue et le nom de l’étudiant.e d’ID 5
