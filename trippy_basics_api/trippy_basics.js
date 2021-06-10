@@ -3,6 +3,12 @@ const app = express();
 const cors = require('cors');
 const mongoose = require('mongoose');
 
+const Table = require('./model/table');
+const Room = require('./model/room');
+const Hotel = require('./model/hotel');
+const Restaurant = require('./model/restaurant');
+
+
 mongoose.connect("mongodb://localhost:27017/trippy_basics", (err) => {
     if (err) {
         console.error('Error !!!', err);
@@ -14,84 +20,29 @@ mongoose.connect("mongodb://localhost:27017/trippy_basics", (err) => {
 app.use(express.json())
 app.use(cors())
 
-const hotelSchema = mongoose.Schema({
-    name: String,
-    address: String,
-    city: String,
-    country: String,
-    stars: { type: Number, min: 1, max: 5 },
-    hasSpa: Boolean,
-    hasPool: Boolean,
-    priceCategory: { type: Number, min: 1, max: 3 }
-})
-
-const Hotel = mongoose.model('Hotel', hotelSchema)
-
-
-const restaurantSchema = mongoose.Schema({
-    name: String,
-    address: String,
-    city: String,
-    country: String,
-    stars: { type: Number, min: 1, max: 5 },
-    cuisine: String,
-    priceCategory: { type: Number, min: 1, max: 3 }
-})
-
-const Restaurant = mongoose.model('Restaurant', restaurantSchema)
-
-function exempleRestoFunc() {
-
-    try {
-        const exempleResto = new Restaurant({
-            name: "Resto",
-            address: "Address",
-            city: "Paris",
-            country: "France",
-            stars: 3,
-            cuisine: "Indienne",
-            priceCategory: 2
-        })
-
-        exempleResto.save()
-
-    } catch (error) {
-        console.error('ERROR !', error);
-    }
-}
-
-function exempleHotelFunc() {
-    try {
-        const exempleHotel = new Hotel({
-            name: "Hotel",
-            address: "Address",
-            city: "Paris",
-            country: "France",
-            stars: 3,
-            hasSpa: true,
-            hasPool: false,
-            priceCategory: 2
-        })
-
-        exempleHotel.save();
-
-    } catch (error) {
-        console.error('ERROR !', error);
-    }
-
-}
-
-
-
-
-// - Ajouter la possiblité d’effacer un hôtel (`DELETE /hotels/:id`)
-
 
 app.get("/hotels", async (req, res) => {
     try {
-        const allHotels = await Hotel.find()
-        res.json(allHotels)
+        const limit = parseInt(req.query.limit)
+        const page = parseInt(req.query.page)
 
+        if (limit) {
+            if (page) {
+                const startIndex = (page - 1) * limit
+
+                const hotelsToShow = await Hotel.find().skip(startIndex).limit(limit)
+
+                res.json(hotelsToShow)
+            } else {
+                const hotelsToShow = await Hotel.find().limit(limit)
+
+                res.json(hotelsToShow)
+            }
+
+        } else {
+            const allHotels = await Hotel.find()
+            res.json(allHotels)
+        }
     } catch (error) {
         console.error('Error GET / hotels !!!', error);
         res.json({ message: "Error GET / hotels sorry !!!" })
@@ -102,8 +53,8 @@ app.get("/hotels/:id", async (req, res) => {
     try {
         const newId = req.params.id
 
-        const HotelById = await Hotel.findById(newId)
-        res.json(HotelById)
+        const hotelById = await Hotel.findById(newId).populate("rooms")
+        res.json(hotelById)
 
     } catch (error) {
         console.error('Error GET / hotels / :id !!!', error);
@@ -147,6 +98,89 @@ app.delete("/hotels/:id", async (req, res) => {
     } catch (error) {
         console.error('Error DELETE / hotels / :id !!!', error);
         res.json({ message: "Error DELETE / hotels / :id sorry !!!" })
+    }
+})
+
+
+app.get("/restaurants", async (req, res) => {
+    try {
+
+        const limit = parseInt(req.query.limit)
+        const page = parseInt(req.query.page)
+
+        if (limit) {
+            if (page) {
+                const startIndex = (page - 1) * limit
+
+                const restaurantsToShow = await Restaurant.find().skip(startIndex).limit(limit)
+
+                res.json(restaurantsToShow)
+            } else {
+                const restaurantsToShow = await Restaurant.find().limit(limit)
+
+                res.json(restaurantsToShow)
+            }
+
+        } else {
+            const allRestaurants = await Restaurant.find()
+            res.json(allRestaurants)
+        }
+
+    } catch (error) {
+        console.error('Error GET / restaurants !!!', error);
+        res.json({ message: "Error GET / restaurants sorry !!!" })
+    }
+})
+
+app.get("/restaurants/:id", async (req, res) => {
+    try {
+        const newId = req.params.id
+
+        const restaurantById = await Restaurant.findById(newId).populate("tables")
+        res.json(restaurantById)
+
+    } catch (error) {
+        console.error('Error GET / restaurants / :id !!!', error);
+        res.json({ message: "Error GET / restaurants / :id sorry !!!" })
+    }
+})
+
+app.post("/restaurants", async (req, res) => {
+    try {
+        let restaurantToAdd = req.body
+
+        await Restaurant.create(restaurantToAdd)
+        res.json({ message: "Restaurant added !" })
+
+    } catch (error) {
+        console.error('Error POST / restaurants !!!', error);
+        res.json({ message: "Error POST / restaurants sorry !!!" })
+    }
+})
+
+app.put("/restaurants/:id", async (req, res) => {
+    try {
+        let idReceived = req.params.id
+        let newName = req.query.name
+
+        await Restaurant.findByIdAndUpdate(idReceived, { name: newName })
+        res.json({ message: 'Name changed !!!' })
+    } catch (error) {
+        console.error('Error PUT / restaurants / :id !!!', error);
+        res.json({ message: "Error PUT / restaurants / :id sorry !!!" })
+    }
+
+})
+
+app.delete("/restaurants/:id", async (req, res) => {
+    try {
+        let idReceived = req.params.id
+
+        await Restaurant.findByIdAndDelete(idReceived)
+        res.json({ message: 'Restaurant deleted' })
+    } catch (error) {
+        console.error('Error DELETE / restaurants / :id !!!', error);
+        res.json({ message: "Error DELETE / restaurants / :id sorry !!!" })
     }
 })
 

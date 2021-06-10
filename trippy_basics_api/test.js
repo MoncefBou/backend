@@ -36,7 +36,7 @@ const Restaurant = mongoose.model('Restaurant', restaurantSchema)
 
 async function s(){
 
-    await Hotel.findOneAndDelete({_id: "60c0d7466beedd8d13693a2d"})
+    await Hotel.findOneAndDelete({_id: "60c0df86e76abc8f4f6b42f2"})
     console.log('cfait !!!!!');
 }
-// s()
+s()
