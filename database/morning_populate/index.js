@@ -70,4 +70,18 @@ async function showStudent() {
     }
 }
 
-showStudent()
+
+async function saveData(student, address) {
+try {
+    
+    const newAddress = await Address.create(address)
+
+
+
+
+
+
+} catch (error) {
+    console.error(error);
+}
+}
