@@ -4,6 +4,8 @@ const passwordValidator = require('password-validator');
 const app = express();
 const cors = require('cors');
 const mongoose = require('mongoose');
+const { usersRoutes } = require('./routes/usersRoutes')
+const User = require('./models/user')
 
 mongoose.connect("mongodb://localhost:27017/validator");
 
@@ -12,6 +14,21 @@ mongoose.connect("mongodb://localhost:27017/validator");
 app.use(express.static('public'));
 
 app.use(cors())
+
+app.get("/", async (req, res) => {
+    try {
+        
+        const allUsers = await User.find()
+
+        res.json(allUsers)
+
+    } catch (error) {
+        res.status(500).json({ errorMessage: "There was a problem !!!" })
+    }
+} )
+
+// app.use("/users", usersRoutes)
+
 
 
 
