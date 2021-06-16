@@ -10,10 +10,10 @@ const User = require('./models/user')
 mongoose.connect("mongodb://localhost:27017/validator");
 
 
-
+app.use(express.json())
 app.use(express.static('public'));
-
 app.use(cors())
+
 
 app.get("/", async (req, res) => {
     try {
@@ -27,7 +27,7 @@ app.get("/", async (req, res) => {
     }
 } )
 
-// app.use("/users", usersRoutes)
+app.use("/users", usersRoutes)
 
 
 
