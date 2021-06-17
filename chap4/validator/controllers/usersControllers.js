@@ -67,13 +67,13 @@ const sendUserByUsername = async (req, res) => {
     try {
         const usernameReceived = req.params.value;
 
-        const userFound = await User.findOne({ username: usernameReceived }).populate('city', 'name -_id')
+        const userFounds = await User.findOne({ username: usernameReceived }).populate('city', 'name -_id')
 
-        if (!userFound) {
+        if (!userFounds) {
             res.json({ message: "the username or id doesn't exist sorry !" })
         }
 
-        res.json(userFound)
+        res.json(userFounds)
 
     } catch (error) {
         res.status(500).json({ errorMessage: "There was a problem !!!" })
