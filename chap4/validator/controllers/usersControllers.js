@@ -22,24 +22,6 @@ const addUser = async (req, res) => {
     }
 }
 
-
-
-const sendUserByUsername = async (req, res) => {
-    try {
-
-        const usernameReceived = req.params.value;
-
-        console.log(usernameReceived);
-
-        const userFound = await User.findOne({ username: usernameReceived }).populate('city', 'name -_id')
-
-        res.json(userFound)
-
-    } catch (error) {
-        res.status(500).json({ errorMessage: "There was a problem !!!" })
-    }
-}
-
 const sendUserByEmail = async (req, res, next) => {
     try {
         const value = req.params.value
@@ -48,7 +30,7 @@ const sendUserByEmail = async (req, res, next) => {
             next()
         } else {
 
-            const findWithEmail = await User.findOne({ email: value }).populate('city', 'name -_id')
+            const findWithEmail = await User.findOne({ email: value }).populate('city', 'name -_id').lean()
 
             if (!findWithEmail) {
                 res.json({ message: "this email doesn't exist" })
@@ -65,19 +47,36 @@ const sendUserById = async (req, res, next) => {
     try {
         const value = req.params.value
 
-        const foundId = await User.findById(value).populate('city', 'name -_id')
+        if (value.match(/^[0-9a-fA-F]{24}$/)) {
+            
+            const foundId = await User.findById(value).populate('city', 'name -_id').lean()
 
-
-
-        if (!foundId) {
-            next()
+            if (!foundId ) {
+                next()
+            } 
+                res.json(foundId)
         }
 
-        res.json(foundId)
+        next()
     } catch (error) {
-        console.log('yooooo')
         res.status(500).json({ errorMessage: "There was a problem !!!" })
+    }
+}
 
+const sendUserByUsername = async (req, res) => {
+    try {
+        const usernameReceived = req.params.value;
+
+        const userFound = await User.findOne({ username: usernameReceived }).populate('city', 'name -_id')
+
+        if (!userFound) {
+            res.json({ message: "the username or id doesn't exist sorry !" })
+        }
+
+        res.json(userFound)
+
+    } catch (error) {
+        res.status(500).json({ errorMessage: "There was a problem !!!" })
     }
 }
 
