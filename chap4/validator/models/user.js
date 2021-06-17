@@ -3,8 +3,8 @@ const mongoose = require('mongoose');
 mongoose.connect("mongodb://localhost:27017/validator");
 
 const userSchema = mongoose.Schema({
-    username: String,
-    email: String,
+    username: {type: String, require: true},
+    email: {type: String, require: true},
     age: Number,
     city: [{ type: mongoose.Schema.Types.ObjectId, ref: 'City' }]
 })

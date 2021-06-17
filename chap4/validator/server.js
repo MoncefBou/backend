@@ -1,6 +1,4 @@
 const express = require('express');
-const expressValidator = require("express-validator");
-const passwordValidator = require('password-validator');
 const app = express();
 const cors = require('cors');
 const mongoose = require('mongoose');

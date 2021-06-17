@@ -1,7 +1,7 @@
 const express = require("express")
 const router = express.Router()
 const expressValidator = require("express-validator");
-const { addUser, sendUserByUsername, sendUserByEmail } = require('../controllers/usersControllers')
+const { addUser, sendUserByUsername, sendUserByEmail, sendUserById } = require('../controllers/usersControllers')
 
 router.post("/add",
     expressValidator.body("username").isLength({ min: 4 }),
@@ -18,9 +18,12 @@ router.post("/add",
     addUser
 )
 
-router.get("/:username", sendUserByUsername)
+router.get("/:value",
+     sendUserByEmail, 
+     sendUserById, 
+     sendUserByUsername)
 
-router.get("/:email", sendUserByEmail)
+// router.get("/:email", sendUserByEmail)
 
 
 module.exports = { usersRoutes: router };
