@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const { usersRoutes } = require('./routes/usersRoutes')
 const User = require('./models/user')
 
-mongoose.connect("mongodb://localhost:27017/validator");
+mongoose.connect("mongodb://localhost:27017/validator", { useNewUrlParser: true, useUnifiedTopology: true });
 
 
 app.use(express.json())

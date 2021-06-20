@@ -4,8 +4,8 @@ const expressValidator = require("express-validator");
 const { addUser, sendUserByUsername, sendUserByEmail, sendUserById } = require('../controllers/usersControllers')
 
 router.post("/add",
-    expressValidator.body("username").isLength({ min: 4 }),
-    expressValidator.body("email").isEmail(),
+    expressValidator.body("username").not().isEmpty().trim().escape().isLength({ min: 4 }),
+    expressValidator.body("email").not().isEmpty().isEmail().normalizeEmail(),
     expressValidator.body("age").isInt().isLength(({ min: 2, max: 2 })),
     expressValidator.body("city").custom(value => {
         if (value === "Paris" ||
@@ -22,8 +22,6 @@ router.get("/:value",
      sendUserByEmail, 
      sendUserById, 
      sendUserByUsername)
-
-// router.get("/:email", sendUserByEmail)
 
 
 module.exports = { usersRoutes: router };

@@ -27,39 +27,37 @@ const sendUserByEmail = async (req, res, next) => {
         const value = req.params.value
         const regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
         if (!(regex.test(value))) {
-            next()
+            return next()
         } else {
 
             const findWithEmail = await User.findOne({ email: value }).populate('city', 'name -_id').lean()
 
             if (!findWithEmail) {
-                res.json({ message: "this email doesn't exist" })
+                return res.json({ message: "this email doesn't exist" })
             }
-
-            res.json(findWithEmail)
+            return res.json(findWithEmail)
         }
     } catch (error) {
-        res.status(500).json({ errorMessage: "There was a problem !!!" })
+        return res.status(500).json({ errorMessage: "There was a problem !!!" })
     }
 }
 
 const sendUserById = async (req, res, next) => {
     try {
         const value = req.params.value
+        const regex = /^[0-9a-fA-F]{24}$/
+        if (regex.test(value)) {
 
-        if (value.match(/^[0-9a-fA-F]{24}$/)) {
-            
             const foundId = await User.findById(value).populate('city', 'name -_id').lean()
 
-            if (!foundId ) {
-                next()
-            } 
-                res.json(foundId)
+            if (!foundId) {
+                return next()
+            }
+            return res.json(foundId)
         }
-
-        next()
+        return next()
     } catch (error) {
-        res.status(500).json({ errorMessage: "There was a problem !!!" })
+        return res.status(500).json({ errorMessage: "There was a problem !!!" })
     }
 }
 
@@ -70,13 +68,11 @@ const sendUserByUsername = async (req, res) => {
         const userFounds = await User.findOne({ username: usernameReceived }).populate('city', 'name -_id')
 
         if (!userFounds) {
-            res.json({ message: "the username or id doesn't exist sorry !" })
+            return res.json({ message: "the username or id doesn't exist sorry !" })
         }
-
-        res.json(userFounds)
-
+        return res.json(userFounds)
     } catch (error) {
-        res.status(500).json({ errorMessage: "There was a problem !!!" })
+        return res.status(500).json({ errorMessage: "There was a problem !!!" })
     }
 }
 
