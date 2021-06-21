@@ -1,26 +1,11 @@
-const express = require('express');
-const app = express();
-const cors = require('cors');
+const express = require("express")
+const router = express.Router()
+const expressValidator = require("express-validator");
 
-const mongoose = require('mongoose');
-const Heros = require('./models/heros');
-mongoose.connect("mongodb://localhost:27017/avengers",  { useNewUrlParser: true, useUnifiedTopology: true })
+const { transformName, isNameHeroValid, isPowerHeroValid, validateHero } = require('../middlewares/heroesMiddlewares')
 
 
-const heroesRoutes = require ('./routes/heroesRoutes')
-const { debug } = require('./middlewares/heroesMiddlewares')
-
-
-app.use(express.json())
-app.use(cors())
-app.use(debug)
-
-
-app.use("/heroes", heroesRoutes)
-
-
-
-app.get("/heroes", async (req, res) => {
+router.get("/heroes", async (req, res) => {
     try {
         const superHeros = await Heros.find()
         res.json(superHeros)
@@ -30,7 +15,7 @@ app.get("/heroes", async (req, res) => {
     }
 })
 
-app.post("/heroes", transformName, async (req, res) => {
+router.post("/heroes", transformName, async (req, res) => {
     try {
 
         let newHeros = req.body
@@ -54,7 +39,7 @@ app.post("/heroes", transformName, async (req, res) => {
 
 })
 
-app.get("/heroes/:name", async (req, res) => {
+router.get("/heroes/:name", async (req, res) => {
     try {
         let nameSearch = req.params.name.toLowerCase()
 
@@ -78,7 +63,7 @@ app.get("/heroes/:name", async (req, res) => {
 
 })
 
-app.delete("/heroes/:name", isNameHeroValid, async (req, res) => {
+router.delete("/heroes/:name", isNameHeroValid, async (req, res) => {
     try {
         const nameToDelete = req.params.name.toLowerCase()
 
@@ -93,7 +78,7 @@ app.delete("/heroes/:name", isNameHeroValid, async (req, res) => {
 
 })
 
-app.put("/heroes/:name", isNameHeroValid, validateHero, async (req, res) => {
+router.put("/heroes/:name", isNameHeroValid, validateHero, async (req, res) => {
     try {
         const nameToUpdate = req.params.name.toLowerCase()
         const dataReceived = req.body
@@ -124,7 +109,7 @@ app.put("/heroes/:name", isNameHeroValid, validateHero, async (req, res) => {
 
 })
 
-app.get("/heroes/:name/powers", async (req, res) => {
+router.get("/heroes/:name/powers", async (req, res) => {
     try {
         let nameToSearch = req.params.name.toLowerCase()
         const findPowerHeros = await Heros.find({ name: nameToSearch }, 'power -_id')
@@ -153,7 +138,7 @@ app.get("/heroes/:name/powers", async (req, res) => {
 
 })
 
-app.post("/heroes/:name/powers", async (req, res) => {
+router.post("/heroes/:name/powers", async (req, res) => {
     try {
         let nameToSearch = req.params.name.toLowerCase()
         let newPower = req.body.newPower
@@ -180,37 +165,37 @@ app.post("/heroes/:name/powers", async (req, res) => {
     }
 })
 
-app.delete("/heroes/:name/power/:power", isNameHeroValid, isPowerHeroValid, async (req, res) => {
-try {
-    const nameToSearch = req.params.name.toLowerCase()
-    const power = req.params.power.toLowerCase()
-    const findPowerHeros = await Heros.find({ name: nameToSearch }, 'power -_id')
+router.delete("/heroes/:name/power/:power", isNameHeroValid, isPowerHeroValid, async (req, res) => {
+    try {
+        const nameToSearch = req.params.name.toLowerCase()
+        const power = req.params.power.toLowerCase()
+        const findPowerHeros = await Heros.find({ name: nameToSearch }, 'power -_id')
 
-    if (findPowerHeros) {
-        const arrayOfPowers = findPowerHeros[0].power
+        if (findPowerHeros) {
+            const arrayOfPowers = findPowerHeros[0].power
 
-        if (arrayOfPowers.indexOf(power) !== -1) {
+            if (arrayOfPowers.indexOf(power) !== -1) {
 
-            arrayOfPowers.splice(arrayOfPowers.indexOf(power), 1)
+                arrayOfPowers.splice(arrayOfPowers.indexOf(power), 1)
 
-            const deletedPower = await Heros.updateOne({ name: nameToSearch }, { $set: { power: arrayOfPowers } })
-            res.json({ message: 'pouvoir supprimé' })
+                const deletedPower = await Heros.updateOne({ name: nameToSearch }, { $set: { power: arrayOfPowers } })
+                res.json({ message: 'pouvoir supprimé' })
+
+            } else {
+                res.json({ message: 'pouvoir pas trouvé' })
+            }
+
 
         } else {
-            res.json({ message: 'pouvoir pas trouvé' })
+            res.json({ message: 'heros pas trouvé' })
         }
-
-
-    } else {
-        res.json({ message: 'heros pas trouvé' })
+    } catch (error) {
+        console.error('Error DELETE / heroes / :name / powers', error);
+        res.json({ message: 'Error with database sorry' })
     }
-} catch (error) {
-    console.error('Error DELETE / heroes / :name / powers', error);
-    res.json({ message: 'Error with database sorry' })
-}
 
 
-const nameFound = superHeros.find(hero => {
+    const nameFound = superHeros.find(hero => {
         return name.split(" ").join("") === hero.name.split(" ").join("").toLowerCase()
     })
 
@@ -228,8 +213,4 @@ const nameFound = superHeros.find(hero => {
 })
 
 
-// SERVER
-const port = 8000;
-app.listen(port, () => console.log('Server', port))
-
-// --experimental-json-modules
+module.exports = { heroesRoutes : router }
