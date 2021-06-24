@@ -1,7 +1,5 @@
 const mongoose = require('mongoose');
 
-mongoose.connect("mongodb://localhost:27017/trippy_basics")
-
 const hotelSchema = mongoose.Schema({
     name: String,
     address: String,
